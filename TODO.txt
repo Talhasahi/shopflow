@@ -37,17 +37,17 @@ PHASE 1 - DEBUGGING, LOGS, AND ERRORS
 ============================================================
 Learn this now so every later phase is easier.
 
-[ ] Learn where logs appear:
+[x] Learn where logs appear:
     - Server Component, Server Action, and Route Handler logs: terminal.
     - Client Component logs: browser DevTools (F12).
     - Laravel comparison: the terminal is our first `laravel.log` view.
-[ ] Add .vscode/launch.json for server, client, and full-stack debugging.
-[ ] Run server debugger with `npm run dev -- --inspect`.
-[ ] Set a breakpoint, inspect variables, and continue execution.
-[ ] Create lib/logger.ts with info(), warn(), and error().
-[ ] Use structured log fields: action, userId, productId, orderId, error.
-[ ] Never log passwords, cookies, API keys, or payment data.
-[ ] Add app/error.tsx, global-error.tsx, and not-found.tsx.
+[x] Add .vscode/launch.json for server, client, and full-stack debugging.
+[x] Run server debugger with `npm run dev -- --inspect`.
+[x] Set a breakpoint, inspect variables, and continue execution.
+[x] Create lib/logger.ts with info(), warn(), and error().
+[x] Use structured log fields: action, userId, productId, orderId, error.
+[x] Never log passwords, cookies, API keys, or payment data.
+[x] Add app/error.tsx, global-error.tsx, and not-found.tsx.
 [ ] Add try/catch and useful logs around server mutations.
 [ ] Before deployment, add error monitoring (for example Sentry).
 [ ] Use instrumentation.ts to initialize production monitoring.

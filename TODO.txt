@@ -1,0 +1,227 @@
+SHOPFLOW - STEP BY STEP TODO
+(Plain steps, phase by phase. Check off as you go. Each step says WHAT you're doing and WHY.)
+
+=====================================================
+PHASE 0 - PROJECT SETUP
+=====================================================
+[ ] Create Next.js project in Laragon (C:\laragon\www\shopflow)
+    -> Why: this is your base app, like "laravel new" but for Next.js
+
+[ ] Install Tailwind (comes built-in if you chose it during setup)
+    -> Why: utility CSS classes instead of writing custom .css files
+
+[ ] Install shadcn/ui
+    -> Why: pre-built, good-looking components (buttons, cards, forms, tables)
+       you just copy-paste into your project and customize. Saves you from
+       building UI components from scratch.
+    -> Command: npx shadcn@latest init
+
+[ ] Install Prisma + connect MySQL (Laragon)
+    -> Why: this is your "Eloquent" - lets you talk to MySQL using JS/TS
+       instead of raw SQL
+
+[ ] Run first migration, confirm tables appear in Adminer
+    -> Why: confirms Next.js <-> Prisma <-> MySQL are all talking to each other
+
+CHECKPOINT: You can run "npm run dev" and see the default homepage at
+localhost:3000, and your DB tables exist in Adminer.
+
+=====================================================
+PHASE 1 - COMPONENT FOUNDATION (Building blocks first)
+=====================================================
+This phase is just building reusable UI pieces, no logic yet. Like building
+Blade components (<x-button>, <x-card>) before wiring them to real data.
+
+[ ] Layout components
+    - Navbar.tsx        -> top navigation, changes based on logged in role
+    - Footer.tsx         -> simple footer
+    - Sidebar.tsx        -> used later in vendor/admin dashboards
+
+[ ] shadcn components to pull in (just install, don't build yourself)
+    - Button, Input, Card, Table, Dialog, Toast, Badge, Dropdown-menu
+    -> Why: these become your Lego bricks for every page after this
+
+[ ] ProductCard.tsx
+    -> Why: shows one product (image, title, price, button). Reused on
+       homepage, search results, vendor dashboard etc. Build once, use everywhere.
+
+[ ] LoadingSpinner.tsx / Skeleton.tsx
+    -> Why: modern apps show a "loading skeleton" instead of a blank white
+       screen while data loads. Small thing, makes app feel professional.
+
+CHECKPOINT: You have a components/ui folder full of reusable pieces, and
+a components/ folder with ProductCard, Navbar, Footer - none connected to
+real data yet, just static/fake data to test how they look.
+
+=====================================================
+PHASE 2 - AUTH & ROLES
+=====================================================
+[ ] Install Auth.js (NextAuth v5)
+    -> Why: handles login/signup/sessions. Like Laravel Breeze/Sanctum.
+
+[ ] Build Login page + component (LoginForm.tsx)
+    -> Why: form component, calls Auth.js to sign in
+
+[ ] Build Register page + component (RegisterForm.tsx)
+    -> Why: creates a new User in DB with a role (customer/vendor)
+
+[ ] Add role field to session (CUSTOMER / VENDOR / ADMIN)
+    -> Why: so the app knows what each logged-in user is allowed to see
+
+[ ] Build middleware.ts to protect routes
+    -> Why: like Laravel route middleware - blocks /vendor and /admin pages
+       from people who aren't that role
+
+[ ] Update Navbar.tsx to show different links based on role
+    -> Why: logged-out users see "Login/Signup", vendors see "My Dashboard",
+       admins see "Admin Panel"
+
+CHECKPOINT: You can register, log in, log out, and get redirected/blocked
+correctly based on your role.
+
+=====================================================
+PHASE 3 - VENDOR: PRODUCT MANAGEMENT
+=====================================================
+[ ] Build ProductForm.tsx component
+    -> Why: one form component used for BOTH creating and editing a product
+       (pass in existing data if editing, empty if creating - avoids
+       duplicate code)
+
+[ ] Build Server Action: createProduct()
+    -> Why: this is your "controller method" - runs on the server, saves
+       product to DB, no separate API route needed
+
+[ ] Build Server Action: updateProduct() / deleteProduct()
+    -> Why: same idea, edit/remove logic
+
+[ ] Build vendor dashboard page (/vendor/products)
+    -> Why: lists the vendor's own products using ProductCard or a Table
+       component, with Edit/Delete buttons
+
+[ ] Add product status badge (Pending / Approved / Rejected)
+    -> Why: uses the shadcn Badge component - shows vendor where their
+       product stands in the approval process
+
+CHECKPOINT: Logged in as a vendor, you can add a product, see it as
+"Pending", edit it, and delete it.
+
+=====================================================
+PHASE 4 - ADMIN: APPROVAL DASHBOARD
+=====================================================
+[ ] Build admin dashboard page (/admin/products)
+    -> Why: shows a Table component of ALL pending products from every vendor
+
+[ ] Build Approve/Reject buttons -> Server Action
+    -> Why: one click updates product status in DB, no page reload needed
+
+[ ] Build simple stats component (Total products, Pending count, etc.)
+    -> Why: your first taste of a "dashboard" - small cards showing numbers,
+       very common modern UI pattern
+
+CHECKPOINT: Logged in as admin, you see all pending products and can
+approve/reject them, and vendor dashboard updates the status.
+
+=====================================================
+PHASE 5 - PUBLIC STOREFRONT
+=====================================================
+[ ] Build homepage (/) 
+    -> Why: shows only APPROVED products using your ProductCard component
+       in a responsive grid
+
+[ ] Build SearchBar.tsx + FilterSidebar.tsx components
+    -> Why: lets users filter by price/search by name - practice with
+       reading URL query params (?search=shoes) which is a very "Next.js" thing
+
+[ ] Build product detail page (/products/[id])
+    -> Why: dynamic route - this is Next.js's version of Laravel's
+       Route::get('/products/{id}')
+
+CHECKPOINT: Anyone (logged in or not) can browse products, search/filter,
+and click into a product detail page.
+
+=====================================================
+PHASE 6 - CART & CHECKOUT
+=====================================================
+[ ] Install Zustand (simple state management)
+    -> Why: needed because "cart" data needs to persist across pages
+       without a database - like a session, but on the client side
+
+[ ] Build useCartStore (cart logic)
+    -> Why: add to cart, remove, update quantity - all in memory
+
+[ ] Build CartDrawer.tsx component
+    -> Why: slide-out panel showing cart items, common modern e-commerce UI
+
+[ ] Add "Add to Cart" button on ProductCard and product detail page
+    -> Why: connects your UI to the cart store
+
+[ ] Install Stripe, build checkout Server Action
+    -> Why: creates a Stripe Checkout Session and redirects user to pay
+
+[ ] Build Stripe webhook route (api/webhooks/stripe)
+    -> Why: Stripe calls this URL after payment succeeds - this is where
+       you actually create the Order in your DB (never trust the frontend
+       to tell you "payment succeeded")
+
+CHECKPOINT: You can add items to cart, go to checkout, pay with Stripe
+test card, and an Order gets created in your DB.
+
+=====================================================
+PHASE 7 - AI FEATURE (Product Description Generator)
+=====================================================
+[ ] Build API route /api/ai/generate-description
+    -> Why: takes title + bullet points, sends to Claude/OpenAI API,
+       returns a written description
+
+[ ] Add "Generate with AI" button inside ProductForm.tsx
+    -> Why: vendor fills a few words, AI writes the full description,
+       fills the textarea automatically
+
+CHECKPOINT: While adding a product, clicking "Generate with AI" fills in
+a full description automatically.
+
+=====================================================
+PHASE 8 - REAL-TIME NOTIFICATIONS
+=====================================================
+[ ] Set up Pusher account + install pusher-js
+    -> Why: lets the server "push" a message to the browser instantly,
+       without the browser having to keep asking "any updates?"
+
+[ ] Trigger a Pusher event when a new Order is created (inside webhook)
+    -> Why: the moment a sale happens, notify the vendor right away
+
+[ ] Build NotificationToast.tsx component listening for that event
+    -> Why: shows a popup "New order received!" on vendor dashboard live,
+       no page refresh
+
+CHECKPOINT: Open two browser tabs - place an order as a customer in one,
+watch a live notification appear on the vendor dashboard in the other.
+
+=====================================================
+PHASE 9 - POLISH
+=====================================================
+[ ] Add loading states everywhere (use your Skeleton component from Phase 1)
+[ ] Add empty states ("No products yet" instead of blank page)
+[ ] Add basic error handling / toast messages on failed actions
+[ ] Make sure everything is responsive on mobile (Tailwind breakpoints)
+
+CHECKPOINT: App feels "finished" - no blank screens, no broken states.
+
+=====================================================
+PHASE 10 - DEPLOY
+=====================================================
+[ ] Push project to GitHub
+[ ] Create a free MySQL DB on Railway or PlanetScale (cloud database)
+[ ] Deploy to Vercel, connect it to your GitHub repo
+[ ] Add environment variables (DATABASE_URL, Stripe keys, AI key, Pusher keys) in Vercel
+
+CHECKPOINT: Your app is live on a real URL you can share/put on your CV.
+
+=====================================================
+HOW TO USE THIS FILE WITH AI
+=====================================================
+- Work top to bottom, one phase at a time.
+- Copy just the phase you're on into the AI chat and say "let's build this."
+- After finishing a phase, ask AI: "explain what I just built like I'm a
+  Laravel dev" - this is how you actually learn instead of just copy-pasting.
+- Check off each box as you finish it so you always know where you are.

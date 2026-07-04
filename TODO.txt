@@ -1,227 +1,252 @@
-SHOPFLOW - STEP BY STEP TODO
-(Plain steps, phase by phase. Check off as you go. Each step says WHAT you're doing and WHY.)
+SHOPFLOW - STEP-BY-STEP LEARNING ROADMAP
 
-=====================================================
-PHASE 0 - PROJECT SETUP
-=====================================================
-[ ] Create Next.js project in Laragon (C:\laragon\www\shopflow)
-    -> Why: this is your base app, like "laravel new" but for Next.js
+IDEA
+ShopFlow is a multi-vendor marketplace:
+- CUSTOMER browses approved products, uses a cart, and places orders.
+- VENDOR creates products and receives orders.
+- ADMIN approves/rejects products and manages the marketplace.
 
-[ ] Install Tailwind (comes built-in if you chose it during setup)
-    -> Why: utility CSS classes instead of writing custom .css files
+Stack: Next.js App Router, TypeScript, Tailwind, shadcn/ui, Prisma, MySQL,
+Auth.js, Stripe, background jobs, realtime notifications, and AI.
 
-[ ] Install shadcn/ui
-    -> Why: pre-built, good-looking components (buttons, cards, forms, tables)
-       you just copy-paste into your project and customize. Saves you from
-       building UI components from scratch.
-    -> Command: npx shadcn@latest init
+RULES FOR LEARNING
+1. Work on one checkbox at a time.
+2. Ask: "Build this task and explain it like I am a Laravel developer."
+3. Run and test the change yourself.
+4. Mark it [x], make a Git commit, then continue.
+5. Test every CHECKPOINT before starting the next phase.
+6. Add packages only when their phase needs them.
 
-[ ] Install Prisma + connect MySQL (Laragon)
-    -> Why: this is your "Eloquent" - lets you talk to MySQL using JS/TS
-       instead of raw SQL
+============================================================
+PHASE 0 - PROJECT FOUNDATION (CURRENT PHASE)
+============================================================
+[x] Create the Next.js project in C:\laragon\www\shopflow
+    -> Laravel: similar to `laravel new shopflow`.
+[x] Install and confirm Tailwind CSS.
+[x] Run the project at http://localhost:3000 with `npm run dev`.
+[x] Initialize Git and push the project to GitHub.
+[ ] Rewrite README.md with the idea, stack, roles, and local setup.
+[ ] Initialize shadcn/ui.
+[ ] Add shadcn Button, Input, Card, and Badge.
+[ ] Render one Button on the starter page.
 
-[ ] Run first migration, confirm tables appear in Adminer
-    -> Why: confirms Next.js <-> Prisma <-> MySQL are all talking to each other
+CHECKPOINT: The app runs, GitHub is current, and shadcn works.
 
-CHECKPOINT: You can run "npm run dev" and see the default homepage at
-localhost:3000, and your DB tables exist in Adminer.
+============================================================
+PHASE 1 - DEBUGGING, LOGS, AND ERRORS
+============================================================
+Learn this now so every later phase is easier.
 
-=====================================================
-PHASE 1 - COMPONENT FOUNDATION (Building blocks first)
-=====================================================
-This phase is just building reusable UI pieces, no logic yet. Like building
-Blade components (<x-button>, <x-card>) before wiring them to real data.
+[ ] Learn where logs appear:
+    - Server Component, Server Action, and Route Handler logs: terminal.
+    - Client Component logs: browser DevTools (F12).
+    - Laravel comparison: the terminal is our first `laravel.log` view.
+[ ] Add .vscode/launch.json for server, client, and full-stack debugging.
+[ ] Run server debugger with `npm run dev -- --inspect`.
+[ ] Set a breakpoint, inspect variables, and continue execution.
+[ ] Create lib/logger.ts with info(), warn(), and error().
+[ ] Use structured log fields: action, userId, productId, orderId, error.
+[ ] Never log passwords, cookies, API keys, or payment data.
+[ ] Add app/error.tsx, global-error.tsx, and not-found.tsx.
+[ ] Add try/catch and useful logs around server mutations.
+[ ] Before deployment, add error monitoring (for example Sentry).
+[ ] Use instrumentation.ts to initialize production monitoring.
 
-[ ] Layout components
-    - Navbar.tsx        -> top navigation, changes based on logged in role
-    - Footer.tsx         -> simple footer
-    - Sidebar.tsx        -> used later in vendor/admin dashboards
+CHECKPOINT: You can find client errors in DevTools, server errors in the
+terminal, pause code with VS Code, and show a friendly error screen.
 
-[ ] shadcn components to pull in (just install, don't build yourself)
-    - Button, Input, Card, Table, Dialog, Toast, Badge, Dropdown-menu
-    -> Why: these become your Lego bricks for every page after this
+============================================================
+PHASE 2 - DATABASE: PRISMA + MYSQL
+============================================================
+[ ] Start MySQL in Laragon and create the shopflow database.
+[ ] Install Prisma and its client.
+    -> Laravel: Prisma is similar to Eloquent plus migrations.
+[ ] Create .env and .env.example with DATABASE_URL.
+[ ] Confirm .env is ignored by Git.
+[ ] Initialize Prisma with the MySQL provider.
+[ ] Design User and Product models.
+[ ] Add Role enum: CUSTOMER, VENDOR, ADMIN.
+[ ] Add ProductStatus enum: PENDING, APPROVED, REJECTED.
+[ ] Create and run the first migration.
+    -> Laravel: similar to `php artisan migrate`.
+[ ] Create a reusable Prisma client in lib/db.ts.
+[ ] Seed one admin, vendor, customer, and sample products.
+[ ] Inspect data with Prisma Studio and Adminer.
+[ ] Display database products in a Server Component.
 
-[ ] ProductCard.tsx
-    -> Why: shows one product (image, title, price, button). Reused on
-       homepage, search results, vendor dashboard etc. Build once, use everywhere.
+CHECKPOINT: MySQL has the tables/seed data and Next.js can read them.
 
-[ ] LoadingSpinner.tsx / Skeleton.tsx
-    -> Why: modern apps show a "loading skeleton" instead of a blank white
-       screen while data loads. Small thing, makes app feel professional.
+============================================================
+PHASE 3 - UI FOUNDATION
+============================================================
+[ ] Organize app/, components/, components/ui/, lib/, actions/, and types/.
+[ ] Add shadcn components only as needed: Table, Dialog, Sheet, Skeleton,
+    Dropdown Menu, and Sonner.
+[ ] Build Navbar.tsx and Footer.tsx.
+[ ] Build Sidebar.tsx for vendor/admin dashboards.
+[ ] Build ProductCard.tsx with typed fake data.
+[ ] Build ProductGrid.tsx.
+[ ] Build loading skeleton and empty-state components.
+[ ] Replace the starter page with a responsive ShopFlow homepage.
+[ ] Update site title and description.
+[ ] Test phone, tablet, desktop, light, and dark layouts.
 
-CHECKPOINT: You have a components/ui folder full of reusable pieces, and
-a components/ folder with ProductCard, Navbar, Footer - none connected to
-real data yet, just static/fake data to test how they look.
+CHECKPOINT: ShopFlow has a recognizable responsive UI made from reusable parts.
 
-=====================================================
-PHASE 2 - AUTH & ROLES
-=====================================================
-[ ] Install Auth.js (NextAuth v5)
-    -> Why: handles login/signup/sessions. Like Laravel Breeze/Sanctum.
+============================================================
+PHASE 4 - AUTHENTICATION AND ROLES
+============================================================
+[ ] Install the current Auth.js version compatible with this project.
+[ ] Add password hashing and registration validation.
+[ ] Build customer/vendor registration; never allow public ADMIN signup.
+[ ] Build login and logout.
+[ ] Add user ID and role to the session.
+[ ] Protect /vendor and /admin using the current Next.js convention.
+    -> Laravel: similar to route middleware.
+[ ] Authorize again inside every Server Action and Route Handler.
+    -> Hiding a button is not security.
+[ ] Change Navbar links according to session and role.
+[ ] Test guest, customer, vendor, and admin permissions.
 
-[ ] Build Login page + component (LoginForm.tsx)
-    -> Why: form component, calls Auth.js to sign in
+CHECKPOINT: Authentication works and every role is correctly restricted.
 
-[ ] Build Register page + component (RegisterForm.tsx)
-    -> Why: creates a new User in DB with a role (customer/vendor)
+============================================================
+PHASE 5 - VENDOR PRODUCT MANAGEMENT
+============================================================
+[ ] Create a Zod product validation schema.
+[ ] Build one ProductForm.tsx for create and edit.
+[ ] Build createProduct(), updateProduct(), and deleteProduct() Server Actions.
+    -> Laravel: these act like validated controller mutations.
+[ ] Check authentication, role, and product ownership in every action.
+[ ] Build /vendor/products with only the current vendor's products.
+[ ] Show Pending, Approved, and Rejected badges.
+[ ] Add cloud image upload.
+[ ] Add confirmation, loading, success, empty, and error states.
 
-[ ] Add role field to session (CUSTOMER / VENDOR / ADMIN)
-    -> Why: so the app knows what each logged-in user is allowed to see
+CHECKPOINT: A vendor can manage only their products; new products are Pending.
 
-[ ] Build middleware.ts to protect routes
-    -> Why: like Laravel route middleware - blocks /vendor and /admin pages
-       from people who aren't that role
+============================================================
+PHASE 6 - ADMIN APPROVAL
+============================================================
+[ ] Build the /admin dashboard and sidebar.
+[ ] List pending products in a paginated table.
+[ ] Add a product preview dialog.
+[ ] Build approveProduct() and rejectProduct() Server Actions.
+[ ] Save rejection reason, moderator ID, and moderation time.
+[ ] Show stats for users, vendors, products, and pending products.
 
-[ ] Update Navbar.tsx to show different links based on role
-    -> Why: logged-out users see "Login/Signup", vendors see "My Dashboard",
-       admins see "Admin Panel"
+CHECKPOINT: Admin can moderate products and vendors see updated status/reason.
 
-CHECKPOINT: You can register, log in, log out, and get redirected/blocked
-correctly based on your role.
+============================================================
+PHASE 7 - PUBLIC STOREFRONT
+============================================================
+[ ] Show only APPROVED products on the homepage.
+[ ] Build /products/[id].
+[ ] Build search using URL search parameters.
+[ ] Add category and price filters.
+[ ] Add sorting and pagination.
+[ ] Add loading, empty, and not-found states.
+[ ] Add page metadata for SEO/social sharing.
 
-=====================================================
-PHASE 3 - VENDOR: PRODUCT MANAGEMENT
-=====================================================
-[ ] Build ProductForm.tsx component
-    -> Why: one form component used for BOTH creating and editing a product
-       (pass in existing data if editing, empty if creating - avoids
-       duplicate code)
+CHECKPOINT: Guests can browse/search approved products only.
 
-[ ] Build Server Action: createProduct()
-    -> Why: this is your "controller method" - runs on the server, saves
-       product to DB, no separate API route needed
+============================================================
+PHASE 8 - CART, ORDERS, AND STRIPE
+============================================================
+[ ] Add Order and OrderItem Prisma models and migrate.
+[ ] Install Zustand and create a persistent cart store.
+[ ] Build CartDrawer.tsx and quantity/remove controls.
+[ ] Re-read database prices on the server before checkout.
+    -> Never trust product prices sent by the browser.
+[ ] Create a Stripe Checkout Session on the server.
+[ ] Build success and cancellation pages.
+[ ] Build /api/webhooks/stripe as a Route Handler.
+[ ] Verify the webhook signature.
+[ ] Make webhook processing idempotent for Stripe retries.
+[ ] Create an order only after verified payment.
+[ ] Build customer and vendor order-history pages.
 
-[ ] Build Server Action: updateProduct() / deleteProduct()
-    -> Why: same idea, edit/remove logic
+CHECKPOINT: A Stripe test payment creates exactly one correct order.
 
-[ ] Build vendor dashboard page (/vendor/products)
-    -> Why: lists the vendor's own products using ProductCard or a Table
-       component, with Edit/Delete buttons
+============================================================
+PHASE 9 - BACKGROUND JOBS (LARAVEL QUEUE EQUIVALENT)
+============================================================
+Next.js has no built-in Laravel queue worker. Never treat an un-awaited Promise
+or a long Server Action as a durable job: a Vercel function can stop or timeout.
 
-[ ] Add product status badge (Pending / Approved / Rejected)
-    -> Why: uses the shadcn Badge component - shows vendor where their
-       product stands in the approval process
+[ ] Learn three types of background work:
+    1. `after()` from next/server for short, non-critical post-response work.
+       It still shares the deployed route's time limit.
+    2. Vercel Cron calling a protected Route Handler for scheduled work.
+       Laravel comparison: scheduler/cron.
+    3. A durable job service for retries, delays, and long work.
+       Laravel comparison: Job classes + queue worker + failed_jobs.
+[ ] Choose a durable queue:
+    - Good Vercel learning choice: Inngest or Trigger.dev.
+    - Self-hosted choice: BullMQ + Redis + a separate always-on worker.
+    - Do not run an infinite worker inside the Vercel web app.
+[ ] Create the first job: send an order-confirmation email.
+[ ] Dispatch it after the Stripe webhook safely creates the order.
+[ ] Add retries, exponential backoff, and failure logging.
+[ ] Add an idempotency key so retries cannot duplicate important work.
+[ ] Run Next.js and the chosen job dev worker in two terminals.
+    -> Laravel: `php artisan serve` + `php artisan queue:work`.
+[ ] Inspect queued/running/completed/failed jobs in the provider dashboard.
+[ ] Add one scheduled cleanup job.
 
-CHECKPOINT: Logged in as a vendor, you can add a product, see it as
-"Pending", edit it, and delete it.
+CHECKPOINT: Checkout does not wait for email; failed work retries visibly and
+replaying a job does not duplicate database changes.
 
-=====================================================
-PHASE 4 - ADMIN: APPROVAL DASHBOARD
-=====================================================
-[ ] Build admin dashboard page (/admin/products)
-    -> Why: shows a Table component of ALL pending products from every vendor
+============================================================
+PHASE 10 - REAL-TIME NOTIFICATIONS
+============================================================
+[ ] Configure Pusher (or another selected realtime provider).
+[ ] Publish an event after a paid order is created.
+[ ] Authorize private vendor channels.
+[ ] Build NotificationToast.tsx.
+[ ] Store notifications in MySQL for offline users.
+[ ] Add read/unread status.
 
-[ ] Build Approve/Reject buttons -> Server Action
-    -> Why: one click updates product status in DB, no page reload needed
+CHECKPOINT: The correct vendor receives a live and persistent notification.
 
-[ ] Build simple stats component (Total products, Pending count, etc.)
-    -> Why: your first taste of a "dashboard" - small cards showing numbers,
-       very common modern UI pattern
+============================================================
+PHASE 11 - AI DESCRIPTION GENERATOR
+============================================================
+[ ] Choose an AI provider and keep its key server-side.
+[ ] Build /api/ai/generate-description.
+[ ] Validate title and bullet points.
+[ ] Add Generate with AI to ProductForm.tsx.
+[ ] Add loading, failure, retry, and rate limiting.
+[ ] Let the vendor edit generated text before saving.
 
-CHECKPOINT: Logged in as admin, you see all pending products and can
-approve/reject them, and vendor dashboard updates the status.
+CHECKPOINT: AI fills the description without exposing the API key.
 
-=====================================================
-PHASE 5 - PUBLIC STOREFRONT
-=====================================================
-[ ] Build homepage (/) 
-    -> Why: shows only APPROVED products using your ProductCard component
-       in a responsive grid
+============================================================
+PHASE 12 - TESTING, SECURITY, AND POLISH
+============================================================
+[ ] Unit-test validation and order calculations.
+[ ] Integration-test Server Actions and authorization.
+[ ] End-to-end test login, product approval, and checkout.
+[ ] Test forbidden actions for every role.
+[ ] Rate-limit auth, AI, and sensitive endpoints.
+[ ] Review secrets, logs, accessibility, and responsive states.
+[ ] Run `npm run lint`.
+[ ] Run `npm run build`.
 
-[ ] Build SearchBar.tsx + FilterSidebar.tsx components
-    -> Why: lets users filter by price/search by name - practice with
-       reading URL query params (?search=shoes) which is a very "Next.js" thing
+CHECKPOINT: Important journeys pass and the production build succeeds.
 
-[ ] Build product detail page (/products/[id])
-    -> Why: dynamic route - this is Next.js's version of Laravel's
-       Route::get('/products/{id}')
+============================================================
+PHASE 13 - DEPLOYMENT AND OBSERVABILITY
+============================================================
+[x] Push the project to GitHub.
+[ ] Create a production MySQL database compatible with Prisma.
+[ ] Configure cloud product-image storage.
+[ ] Import the GitHub repository into Vercel.
+[ ] Add all environment variables in Vercel (never commit them).
+[ ] Run production migrations safely.
+[ ] Configure Stripe webhook and third-party services.
+[ ] Verify Vercel build/runtime logs and error-monitoring alerts.
+[ ] Test every role and checkout on the live URL.
+[ ] Document deployment and recovery in README.md.
 
-CHECKPOINT: Anyone (logged in or not) can browse products, search/filter,
-and click into a product detail page.
-
-=====================================================
-PHASE 6 - CART & CHECKOUT
-=====================================================
-[ ] Install Zustand (simple state management)
-    -> Why: needed because "cart" data needs to persist across pages
-       without a database - like a session, but on the client side
-
-[ ] Build useCartStore (cart logic)
-    -> Why: add to cart, remove, update quantity - all in memory
-
-[ ] Build CartDrawer.tsx component
-    -> Why: slide-out panel showing cart items, common modern e-commerce UI
-
-[ ] Add "Add to Cart" button on ProductCard and product detail page
-    -> Why: connects your UI to the cart store
-
-[ ] Install Stripe, build checkout Server Action
-    -> Why: creates a Stripe Checkout Session and redirects user to pay
-
-[ ] Build Stripe webhook route (api/webhooks/stripe)
-    -> Why: Stripe calls this URL after payment succeeds - this is where
-       you actually create the Order in your DB (never trust the frontend
-       to tell you "payment succeeded")
-
-CHECKPOINT: You can add items to cart, go to checkout, pay with Stripe
-test card, and an Order gets created in your DB.
-
-=====================================================
-PHASE 7 - AI FEATURE (Product Description Generator)
-=====================================================
-[ ] Build API route /api/ai/generate-description
-    -> Why: takes title + bullet points, sends to Claude/OpenAI API,
-       returns a written description
-
-[ ] Add "Generate with AI" button inside ProductForm.tsx
-    -> Why: vendor fills a few words, AI writes the full description,
-       fills the textarea automatically
-
-CHECKPOINT: While adding a product, clicking "Generate with AI" fills in
-a full description automatically.
-
-=====================================================
-PHASE 8 - REAL-TIME NOTIFICATIONS
-=====================================================
-[ ] Set up Pusher account + install pusher-js
-    -> Why: lets the server "push" a message to the browser instantly,
-       without the browser having to keep asking "any updates?"
-
-[ ] Trigger a Pusher event when a new Order is created (inside webhook)
-    -> Why: the moment a sale happens, notify the vendor right away
-
-[ ] Build NotificationToast.tsx component listening for that event
-    -> Why: shows a popup "New order received!" on vendor dashboard live,
-       no page refresh
-
-CHECKPOINT: Open two browser tabs - place an order as a customer in one,
-watch a live notification appear on the vendor dashboard in the other.
-
-=====================================================
-PHASE 9 - POLISH
-=====================================================
-[ ] Add loading states everywhere (use your Skeleton component from Phase 1)
-[ ] Add empty states ("No products yet" instead of blank page)
-[ ] Add basic error handling / toast messages on failed actions
-[ ] Make sure everything is responsive on mobile (Tailwind breakpoints)
-
-CHECKPOINT: App feels "finished" - no blank screens, no broken states.
-
-=====================================================
-PHASE 10 - DEPLOY
-=====================================================
-[ ] Push project to GitHub
-[ ] Create a free MySQL DB on Railway or PlanetScale (cloud database)
-[ ] Deploy to Vercel, connect it to your GitHub repo
-[ ] Add environment variables (DATABASE_URL, Stripe keys, AI key, Pusher keys) in Vercel
-
-CHECKPOINT: Your app is live on a real URL you can share/put on your CV.
-
-=====================================================
-HOW TO USE THIS FILE WITH AI
-=====================================================
-- Work top to bottom, one phase at a time.
-- Copy just the phase you're on into the AI chat and say "let's build this."
-- After finishing a phase, ask AI: "explain what I just built like I'm a
-  Laravel dev" - this is how you actually learn instead of just copy-pasting.
-- Check off each box as you finish it so you always know where you are.
+CHECKPOINT: ShopFlow is live, observable, and works end to end.

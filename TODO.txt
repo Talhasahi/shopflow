@@ -48,10 +48,6 @@ Learn this now so every later phase is easier.
 [x] Use structured log fields: action, userId, productId, orderId, error.
 [x] Never log passwords, cookies, API keys, or payment data.
 [x] Add app/error.tsx, global-error.tsx, and not-found.tsx.
-[ ] Add try/catch and useful logs around server mutations.
-[ ] Before deployment, add error monitoring (for example Sentry).
-[ ] Use instrumentation.ts to initialize production monitoring.
-
 CHECKPOINT: You can find client errors in DevTools, server errors in the
 terminal, pause code with VS Code, and show a friendly error screen.
 
@@ -117,6 +113,7 @@ PHASE 5 - VENDOR PRODUCT MANAGEMENT
 [ ] Build one ProductForm.tsx for create and edit.
 [ ] Build createProduct(), updateProduct(), and deleteProduct() Server Actions.
     -> Laravel: these act like validated controller mutations.
+[ ] Add try/catch and structured logs around unexpected mutation failures.
 [ ] Check authentication, role, and product ownership in every action.
 [ ] Build /vendor/products with only the current vendor's products.
 [ ] Show Pending, Approved, and Rejected badges.
@@ -245,6 +242,8 @@ PHASE 13 - DEPLOYMENT AND OBSERVABILITY
 [ ] Add all environment variables in Vercel (never commit them).
 [ ] Run production migrations safely.
 [ ] Configure Stripe webhook and third-party services.
+[ ] Add production error monitoring (for example Sentry).
+[ ] Use instrumentation.ts to initialize production monitoring.
 [ ] Verify Vercel build/runtime logs and error-monitoring alerts.
 [ ] Test every role and checkout on the live URL.
 [ ] Document deployment and recovery in README.md.
